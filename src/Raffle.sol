@@ -5,7 +5,7 @@
 // interfaces, libraries, contracts
 // Type declarations
 // State variables
-// Events
+// Events ✅
 // Modifiers
 // Functions
 
@@ -34,6 +34,10 @@ contract Raffle {
     error Raffle_SendMoreToEnterRaffle();
 
     uint256 private immutable i_entranceFee;
+    address payable[] private s_players;
+
+    /** Events */
+    event RaffleEntered(address indexed players);
 
     constructor(uint256 entranceFee) {
         i_entranceFee = entranceFee;
@@ -45,6 +49,8 @@ contract Raffle {
         if(msg.value < i_entranceFee) {       // ✅ This is most gas efficient
             revert Raffle_SendMoreToEnterRaffle();
         }
+        s_players.push(payable(msg.sender));
+        emit RaffleEntered(msg.sender);
     }
 
     function pickWinner() public {
