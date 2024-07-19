@@ -1,7 +1,7 @@
-// Layout of Contract:
-// version
-// imports
-// errors
+// Layout of Contract: 
+// version ✅
+// imports ✅
+// errors ✅
 // interfaces, libraries, contracts
 // Type declarations
 // State variables
@@ -30,6 +30,9 @@ pragma solidity ^0.8.19;
  */
 
 contract Raffle {
+    /** Errors */
+    error Raffle_SendMoreToEnterRaffle();
+
     uint256 private immutable i_entranceFee;
 
     constructor(uint256 entranceFee) {
@@ -37,7 +40,11 @@ contract Raffle {
     }
 
     function enterRaffle() public payable {
-        // Enter the raffle
+        // require(msg.value >= i_entranceFee, "Not Enough ETH to Sent");  
+        // require(msg.value >= i_entranceFee, SendMoreToEnterRaffle());   
+        if(msg.value < i_entranceFee) {       // ✅ This is most gas efficient
+            revert Raffle_SendMoreToEnterRaffle();
+        }
     }
 
     function pickWinner() public {
