@@ -95,7 +95,7 @@ contract RaffleTest is Test {
         vm.roll(block.timestamp + 1);
 
         // Act
-        (bool upKeepNeeded, ) = raffle.checkUpkeep("");
+        (bool upKeepNeeded,) = raffle.checkUpkeep("");
 
         // Assert
         assert(!upKeepNeeded);
@@ -110,7 +110,40 @@ contract RaffleTest is Test {
         raffle.performUpkeep("");
 
         // Act
-        (bool upKeepNeeded, ) = raffle.checkUpkeep("");
+        (bool upKeepNeeded,) = raffle.checkUpkeep("");
+
+        // Assert
+        assert(!upKeepNeeded);
+    }
+
+    // Challange / Homework
+    // 1. testCheckUpKeepReturnsFalseIfEnoughTimeHasPassed
+    function testCheckUpKeepReturnsFalseIfEnoughTimeHasPassed() public {
+        // Arrange
+        vm.prank(PLAYER);
+        raffle.enterRaffle{value: entranceFee}();
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.timestamp + 1);
+        raffle.performUpkeep("");
+
+        // Act
+        (bool upKeepNeeded,) = raffle.checkUpkeep("");
+
+        // Assert
+        assert(!upKeepNeeded);
+    }
+
+    // 2. testCheckUpKeepReturnsTrueWhenParametersAreGood
+    function testCheckUpKeepReturnsTrueWhenParametersAreGood() public {
+        // Arrange
+        vm.prank(PLAYER);
+        raffle.enterRaffle{value: entranceFee}();
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.timestamp + 1);
+        raffle.performUpkeep("");
+
+        // Act
+        (bool upKeepNeeded,) = raffle.checkUpkeep("");
 
         // Assert
         assert(!upKeepNeeded);
