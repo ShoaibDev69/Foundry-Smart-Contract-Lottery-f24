@@ -89,13 +89,16 @@ contract RaffleTest is Test {
         raffle.enterRaffle{value: entranceFee}();
     }
 
+    /*//////////////////////////////////////////////////////////////
+                              CHECKUPKEEP
+    //////////////////////////////////////////////////////////////*/
     function testCheckUpKeepReturnsFalseIfIfItHasNoBalance() public {
         // Arrange
         vm.warp(block.timestamp + interval + 1);
         vm.roll(block.timestamp + 1);
 
         // Act
-        (bool upKeepNeeded,) = raffle.checkUpkeep("");
+        (bool upKeepNeeded, ) = raffle.checkUpkeep("");
 
         // Assert
         assert(!upKeepNeeded);
@@ -110,42 +113,75 @@ contract RaffleTest is Test {
         raffle.performUpkeep("");
 
         // Act
-        (bool upKeepNeeded,) = raffle.checkUpkeep("");
+        (bool upKeepNeeded, ) = raffle.checkUpkeep("");
 
         // Assert
         assert(!upKeepNeeded);
     }
 
     // Challange / Homework
-    // 1. testCheckUpKeepReturnsFalseIfEnoughTimeHasPassed
-    function testCheckUpKeepReturnsFalseIfEnoughTimeHasPassed() public {
+    // Challenge 1. testCheckUpkeepReturnsFalseIfEnoughTimeHasntPassed
+    /* function testCheckUpkeepReturnsFalseIfEnoughTimeHasntPassed() public {
         // Arrange
         vm.prank(PLAYER);
-        raffle.enterRaffle{value: entranceFee}();
-        vm.warp(block.timestamp + interval + 1);
-        vm.roll(block.timestamp + 1);
-        raffle.performUpkeep("");
+        raffle.enterRaffle{value: raffleEntranceFee}();
 
         // Act
-        (bool upKeepNeeded,) = raffle.checkUpkeep("");
+        (bool upkeepNeeded,) = raffle.checkUpkeep("");
 
         // Assert
-        assert(!upKeepNeeded);
+        assert(!upkeepNeeded);
     }
 
-    // 2. testCheckUpKeepReturnsTrueWhenParametersAreGood
-    function testCheckUpKeepReturnsTrueWhenParametersAreGood() public {
+    // Challenge 2. testCheckUpkeepReturnsTrueWhenParametersGood
+    function testCheckUpkeepReturnsTrueWhenParametersGood() public {
+        // Arrange
+        vm.prank(PLAYER);
+        raffle.enterRaffle{value: raffleEntranceFee}();
+        vm.warp(block.timestamp + automationUpdateInterval + 1);
+        vm.roll(block.number + 1);
+
+        // Act
+        (bool upkeepNeeded,) = raffle.checkUpkeep("");
+
+        // Assert
+        assert(upkeepNeeded);
+    } */
+
+    /*//////////////////////////////////////////////////////////////
+                             PERFORMUPKEEP
+    //////////////////////////////////////////////////////////////*/
+    function testPerformUpKeepCanOnlyRunIfCheckUpKeepIsTrue() public {
         // Arrange
         vm.prank(PLAYER);
         raffle.enterRaffle{value: entranceFee}();
         vm.warp(block.timestamp + interval + 1);
-        vm.roll(block.timestamp + 1);
+        vm.roll(block.number + 1);
+
+        // Act / Assert
+        raffle.performUpkeep(" ");
+    }
+
+    function testPerformUpKeepRevretsIfCheckUpKeepIsFalse() public {
+        // Arrange
+        uint256 currentBalance = 0;
+        uint256 numPlayers = 0;
+        Raffle.RaffleState rState = raffle.getRaffleState();
+
+        vm.prank(PLAYER);
+        raffle.enterRaffle{value: entranceFee}();
+        currentBalance = currentBalance + entranceFee;
+        numPlayers = 1;
+
+        // Act / Assert
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Raffle.Raffle__upkeepNotNeeded.selector,
+                currentBalance,
+                numPlayers,
+                rState
+            )
+        );
         raffle.performUpkeep("");
-
-        // Act
-        (bool upKeepNeeded,) = raffle.checkUpkeep("");
-
-        // Assert
-        assert(!upKeepNeeded);
     }
 }
