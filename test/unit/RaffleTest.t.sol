@@ -45,7 +45,7 @@ contract RaffleTest is CodeConstants, Test {
         assert(raffle.getRaffleState() == Raffle.RaffleState.OPEN);
     }
 
-    function testRaffleRevertsWhenYouDontPayEnough() public {
+    function testRaffleRevertsWhenNoETHIsSent() public {
         // Arrange
         vm.prank(PLAYER);
 
