@@ -122,12 +122,15 @@ contract RaffleTest is CodeConstants, Test {
         assert(!upKeepNeeded);
     }
 
-    // Challange / Homework
-    // Challenge 1. testCheckUpkeepReturnsFalseIfEnoughTimeHasntPassed
-    /* function testCheckUpkeepReturnsFalseIfEnoughTimeHasntPassed() public {
+    /**
+     * Challange
+     * * [testCheckUpkeepReturnsFalseIfEnoughTimeHasntPassed] ✅ 
+     * * [testCheckUpkeepReturnsTrueWhenParametersGood] ✅
+     */
+    function testCheckUpkeepReturnsFalseIfEnoughTimeHasntPassed() public {
         // Arrange
         vm.prank(PLAYER);
-        raffle.enterRaffle{value: raffleEntranceFee}();
+        raffle.enterRaffle{value: entranceFee} ();
 
         // Act
         (bool upkeepNeeded,) = raffle.checkUpkeep("");
@@ -136,20 +139,19 @@ contract RaffleTest is CodeConstants, Test {
         assert(!upkeepNeeded);
     }
 
-    // Challenge 2. testCheckUpkeepReturnsTrueWhenParametersGood
     function testCheckUpkeepReturnsTrueWhenParametersGood() public {
         // Arrange
         vm.prank(PLAYER);
-        raffle.enterRaffle{value: raffleEntranceFee}();
-        vm.warp(block.timestamp + automationUpdateInterval + 1);
-        vm.roll(block.number + 1);
+        raffle.enterRaffle{value: entranceFee}();
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.timestamp + 1);
 
         // Act
         (bool upkeepNeeded,) = raffle.checkUpkeep("");
 
         // Assert
         assert(upkeepNeeded);
-    } */
+    }
 
     /*//////////////////////////////////////////////////////////////
                              PERFORMUPKEEP
